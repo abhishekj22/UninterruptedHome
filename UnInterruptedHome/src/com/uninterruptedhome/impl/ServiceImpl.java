@@ -2,6 +2,7 @@ package com.uninterruptedhome.impl;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -89,6 +90,7 @@ public class ServiceImpl {
 		
 		getAllService().remove(service);
 		getAllService().add(ps);
+		Collections.sort(allService);
 	}
 	
 	public void changeToUnpaidService(int num, int isToday, String dueDate) throws ParseException, IllegalAccessException {
@@ -106,6 +108,7 @@ public class ServiceImpl {
 		
 		getAllService().remove(service);
 		getAllService().add(ups);
+		Collections.sort(allService);
 	}
 	
 	public void changeDueDate(int num, int isToday, String dueDate) throws ParseException, IllegalAccessException {

@@ -26,7 +26,7 @@ public class Main {
 		int input;
 		do {
 			System.out.println();
-			System.out.println("---------Welcome to Uninterrupted Home---------");
+			System.out.println("-------------Welcome to Uninterrupted Home-------------");
 			System.out.println("1. Show All Services");
 			System.out.println("2. Show Paid Services");
 			System.out.println("3. Show Unpaid Services");
