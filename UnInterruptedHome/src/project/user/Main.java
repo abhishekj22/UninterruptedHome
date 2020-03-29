@@ -9,23 +9,23 @@ import com.uninterruptedhome.impl.ServiceImpl;
 public class Main {
 
 	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		ServiceImpl services = ServiceImpl.getServices();
-		try {
-			services.addService("Electricity", 1500, "20/03/2020");
-			services.addService("DTH", 450, "25/03/2020");
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		try(Scanner sc = new Scanner(System.in)){
+			ServiceImpl services = ServiceImpl.getServices();
+			try {
+				services.addService("Electricity", 1500, "20/03/2020");
+				services.addService("DTH", 450, "25/03/2020");
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			services.addService("Mobile", 555, new Date());
+			printMenu(sc, services);
 		}
-		services.addService("Mobile", 555, new Date());
-		printMenu(sc, services);
-
 	}
 
 	public static void printMenu(Scanner sc, ServiceImpl services) {
 		int input;
 		do {
+			System.out.println();
 			System.out.println("---------Welcome to Uninterrupted Home---------");
 			System.out.println("1. Show All Services");
 			System.out.println("2. Show Paid Services");
@@ -60,10 +60,10 @@ public class Main {
 				System.out.println("1. Yes");	
 				System.out.println("2. No");
 				int isTodayDate = sc.nextInt();
-				if (isTodayDate == 1) {
+				if (isTodayDate == 2) {
 					services.addService(sname, amt, new Date());
 				}
-				else if(isTodayDate == 2) {
+				else if(isTodayDate == 1) {
 					String date = null;
 					System.out.println("Please Enter Date in DD/MM/YYYY format: ");
 					date = sc.next();
@@ -71,6 +71,7 @@ public class Main {
 						services.addService(sname, amt, date);
 					} catch (ParseException e) {
 						System.out.println("Date format should be DD/MM/YYYY");
+						break;
 					}
 				} else {
 					System.out.println("Invalid Choice.");
@@ -79,12 +80,18 @@ public class Main {
 				System.out.println("Service added successfully!");
 				break;
 			case 5:
-				services.printUnpaidService();
+				services.printAllService();
 				System.out.println("0: Exit ");
 				System.out.println("Select any service to remvove: ");
 				choice = sc.nextInt();
 				if(choice != 0) {
-					String serviceName = services.getServiceName(choice);
+					String serviceName = null;
+					try {
+						serviceName = services.getServiceName(choice);
+					} catch (IllegalAccessException e) {
+						System.out.println("Invalid Choice.");
+						break;
+					}
 					System.out.println("Do you really want to remove service " + serviceName + " ?");
 					System.out.println("1. Yes");
 					System.out.println("2. No");
@@ -114,8 +121,10 @@ public class Main {
 						services.paymentForService(choice, isToday, date);
 					} catch (IllegalAccessException e) {
 						System.out.println("Invalid Choice.");
+						break;
 					} catch (ParseException e) {
 						System.out.println("Date format should be DD/MM/YYYY");
+						break;
 					}
 					System.out.println("Paid successfully!");
 				}
@@ -139,6 +148,10 @@ public class Main {
 						services.changeDueDate(choice, isToday, date);
 					} catch (ParseException e) {
 						System.out.println("Date format should be DD/MM/YYYY");
+						break;
+					} catch (IllegalAccessException e) {
+						System.out.println("Invalid Choice.");
+						break;
 					}
 					System.out.println("Date Changed successfully!");
 				}
@@ -162,6 +175,10 @@ public class Main {
 						services.changePaidDate(choice, isToday, date);
 					} catch (ParseException e) {
 						System.out.println("Date format should be DD/MM/YYYY");
+						break;
+					} catch (IllegalAccessException e) {
+						System.out.println("Invalid Choice.");
+						break;
 					}
 					System.out.println("Date Changed successfully!");
 				}
@@ -177,7 +194,7 @@ public class Main {
 					System.out.println("2. No");
 					int isToday = sc.nextInt();
 					String date = null;
-					if(isToday == 2) {
+					if(isToday == 1) {
 						System.out.println("Please Enter Date in DD/MM/YYYY format: ");
 						date = sc.next();
 					}
@@ -185,8 +202,10 @@ public class Main {
 						services.changeToUnpaidService(choice, isToday, date);
 					} catch (ParseException e) {
 						System.out.println("Date format should be DD/MM/YYYY");
+						break;
 					} catch (IllegalAccessException e) {
 						System.out.println("Invalid Choice.");
+						break;
 					}
 					System.out.println("Service is now unpaid. Please pay at earliest!");
 				}

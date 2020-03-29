@@ -48,24 +48,36 @@ public class ServiceImpl {
 	}
 
 	public void removeService(int num) {
-		getAllService().remove(num);
-		
+		Service serviceToRemove = null;
+		for(Service s: getAllService()) {
+			if(num == s.getId()) {
+				serviceToRemove = s;
+				break;
+			}
+		}
+		getAllService().remove(serviceToRemove);
 	}
 	
-	public String getServiceName(int num) {
+	public String getServiceName(int num) throws IllegalAccessException {
 		return getParticularService(num).getServiceName();
 	}
 	
-	private Service getParticularService(int num) {
-		Service service = getAllService().get(num);
-		//To do: add exception if accessed element out of list
+	private Service getParticularService(int num) throws IllegalAccessException {
+		Service service = null;
+		for(Service s: getAllService()) {
+			if(num == s.getId())
+				service = s;
+		}
+		if(service == null) {
+			throw new IllegalAccessException();
+		}
 		return service;
 	}
 
 	public void paymentForService(int num, int isToday, String dueDate) throws ParseException, IllegalAccessException {
 		Service service = getParticularService(num);
 		if(service instanceof PaidService) {
-			throw new IllegalStateException();
+			throw new IllegalAccessException();
 		}
 		PaidService ps = null;
 		if(isToday == 1) 
@@ -82,12 +94,12 @@ public class ServiceImpl {
 	public void changeToUnpaidService(int num, int isToday, String dueDate) throws ParseException, IllegalAccessException {
 		Service service = getParticularService(num);
 		if(service instanceof UnPaidService) {
-			throw new IllegalStateException();
+			throw new IllegalAccessException();
 		}
 		UnPaidService ups = null;
-		if(isToday == 1) 
+		if(isToday == 2) 
 			ups = new UnPaidService(service.getId(), service.getServiceName(), service.getAmount(), new Date());
-		else if(isToday == 2)
+		else if(isToday == 1)
 			ups = new UnPaidService(service.getId(), service.getServiceName(), service.getAmount(), dueDate);
 		else
 			throw new IllegalAccessException();
@@ -96,7 +108,7 @@ public class ServiceImpl {
 		getAllService().add(ups);
 	}
 	
-	public void changeDueDate(int num, int isToday, String dueDate) throws ParseException {
+	public void changeDueDate(int num, int isToday, String dueDate) throws ParseException, IllegalAccessException {
 		Service service = getParticularService(num);
 		if(service instanceof PaidService) {
 			throw new IllegalStateException();
@@ -108,7 +120,7 @@ public class ServiceImpl {
 			ups.setDueDateInString(dueDate);
 	}
 	
-	public void changePaidDate(int num, int isToday, String paidDate) throws ParseException {
+	public void changePaidDate(int num, int isToday, String paidDate) throws ParseException, IllegalAccessException {
 		Service service = getParticularService(num);
 		if(service instanceof UnPaidService) {
 			throw new IllegalStateException();
@@ -122,18 +134,20 @@ public class ServiceImpl {
 	
 	public void printAllService() {
 		System.out.println("Services are: ");
+		System.out.println("ID " + " Status         " + "Amount   " + "Name   ");
 		for(Service s: allService) {
-			System.out.println(s.getId() + ".  " + s.getServiceName() + "    " + (s.isPaid()? "Paid Amount: " : "UnPaid Amount: ") + s.getAmount());
+			System.out.println(s.getId() + ".  " + (s.isPaid()? "Paid Amount: " : "UnPaid Amount: ") + s.getAmount() + "    " + s.getServiceName());
 		}
 		System.out.println();
 	}
 	
 	public void printUnpaidService() {
 		System.out.println("Unpaid Services are: ");
+		System.out.println("ID " + "Amount  " + "Due Date          " + "Name   ");
 		for(Service s: allService) {
 			if(s instanceof UnPaidService) {
 				UnPaidService ups = (UnPaidService) s;
-				System.out.println(ups.getId() + ".  " + ups.getServiceName() + "    " + "UnPaid Amount: " + ups.getAmount() + "  Due Date: " +ups.getDueDateInString());
+				System.out.println(ups.getId() + ".  " + ups.getAmount() + "   " + ups.getDueDateInString() + "    " + ups.getServiceName());
 			}
 		}
 		System.out.println();
@@ -141,10 +155,11 @@ public class ServiceImpl {
 	
 	public void printPaidService() {
 		System.out.println("Paid Services are: ");
+		System.out.println("ID " + "Amount  " + "Paid Date     " + "Name   ");
 		for(Service s: allService) {
 			if(s instanceof PaidService) {
 				PaidService ps = (PaidService) s;
-				System.out.println(ps.getId() + ".  " + ps.getServiceName() + "    " + "Paid Amount: " + ps.getAmount() + "  Paid Date: " +ps.getPaidDate());
+				System.out.println(ps.getId() + ". "+ ps.getAmount() + "   " + ps.getPaidDateInString() + "    "+ ps.getServiceName());
 			}
 		}
 		System.out.println();
