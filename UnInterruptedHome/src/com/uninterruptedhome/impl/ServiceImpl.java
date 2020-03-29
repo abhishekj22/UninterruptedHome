@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Scanner;
 
 import com.uninterruptedhome.core.PaidService;
 import com.uninterruptedhome.core.Service;
@@ -30,21 +29,17 @@ public class ServiceImpl {
 		allService.add(newService);
 	}
 	
-	public void addService(String serviceName, double amount, String dueDate, String lastPaymentDate) {
+	public void addService(String serviceName, double amount, String dueDate, String lastPaymentDate) throws ParseException {
 		UnPaidService newService = new UnPaidService();
 		newService.setServiceName(serviceName);
 		newService.setAmount(amount);
-		try {
-			newService.setDueDateInString(dueDate);
-			newService.setLastPaymentDateInString(lastPaymentDate);
-		} catch (ParseException e) {
-			System.out.println("Date format should be DD/MM/YYYY");
-		}
+		newService.setDueDateInString(dueDate);
+		newService.setLastPaymentDateInString(lastPaymentDate);
 		newService.setIsPaid(false);
 		allService.add(newService);
 	}
 	
-	public void addService(String serviceName, double amount, String dueDate) {
+	public void addService(String serviceName, double amount, String dueDate) throws ParseException {
 		addService(serviceName, amount, dueDate, null);
 	}
 	
@@ -52,106 +47,77 @@ public class ServiceImpl {
 		addService(serviceName, amount, dueDate, null);
 	}
 
-	public void removeService(int num, Scanner sc) {
-		Service service = getParticularService(num);
-		String serviceName = service.getServiceName();
-		System.out.println("Do you really want to remove service " + serviceName + " ?");
-		System.out.println("1. Yes");
-		System.out.println("2. No");
-		int ch = sc.nextInt();
-		if(ch == 1) {
-			getAllService().remove(num);
-			System.out.println(serviceName + " is removed");
-		}
+	public void removeService(int num) {
+		getAllService().remove(num);
 		
 	}
 	
-	public Service getParticularService(int num) {
+	public String getServiceName(int num) {
+		return getParticularService(num).getServiceName();
+	}
+	
+	private Service getParticularService(int num) {
 		Service service = getAllService().get(num);
-		//to do: add exception if accessed element out of list
+		//To do: add exception if accessed element out of list
 		return service;
 	}
 
-	public void paymentForService(int num, int isToday, String dueDate) {
+	public void paymentForService(int num, int isToday, String dueDate) throws ParseException, IllegalAccessException {
 		Service service = getParticularService(num);
 		if(service instanceof PaidService) {
-			//to do throw error
-			return;
+			throw new IllegalStateException();
 		}
 		PaidService ps = null;
 		if(isToday == 1) 
 			ps = new PaidService(service.getId(), service.getServiceName(), service.getAmount(), new Date());
-		else if(isToday == 2) {
-			try {
-				ps = new PaidService(service.getId(), service.getServiceName(), service.getAmount(), dueDate);
-			} catch (ParseException e) {
-				System.out.println("Date format should be DD/MM/YYYY");
-			}
-		}
+		else if(isToday == 2)
+			ps = new PaidService(service.getId(), service.getServiceName(), service.getAmount(), dueDate);
 		else
-			return;
+			throw new IllegalAccessException();
 		
 		getAllService().remove(service);
 		getAllService().add(ps);
 	}
 	
-	public void changeToUnpaidService(int num, int isToday, String dueDate) {
+	public void changeToUnpaidService(int num, int isToday, String dueDate) throws ParseException, IllegalAccessException {
 		Service service = getParticularService(num);
 		if(service instanceof UnPaidService) {
-			//to do throw error
-			return;
+			throw new IllegalStateException();
 		}
 		UnPaidService ups = null;
 		if(isToday == 1) 
 			ups = new UnPaidService(service.getId(), service.getServiceName(), service.getAmount(), new Date());
-		else if(isToday == 2) {
-			try {
-				ups = new UnPaidService(service.getId(), service.getServiceName(), service.getAmount(), dueDate);
-			} catch (ParseException e) {
-				System.out.println("Date format should be DD/MM/YYYY");
-			}
-		}
+		else if(isToday == 2)
+			ups = new UnPaidService(service.getId(), service.getServiceName(), service.getAmount(), dueDate);
 		else
-			return;
+			throw new IllegalAccessException();
 		
 		getAllService().remove(service);
 		getAllService().add(ups);
 	}
 	
-	public void changeDueDate(int num, int isToday, String dueDate) {
+	public void changeDueDate(int num, int isToday, String dueDate) throws ParseException {
 		Service service = getParticularService(num);
 		if(service instanceof PaidService) {
-			//to do throw error
-			return;
+			throw new IllegalStateException();
 		}
 		UnPaidService ups = (UnPaidService) service;
 		if(isToday == 1) 
 			ups.setDueDate(new Date());
-		else if(isToday == 2) {
-			try {
-				ups.setDueDateInString(dueDate);
-			} catch (ParseException e) {
-				System.out.println("Date format should be DD/MM/YYYY");
-			}
-		}
+		else if(isToday == 2)
+			ups.setDueDateInString(dueDate);
 	}
 	
-	public void changePaidDate(int num, int isToday, String paidDate) {
+	public void changePaidDate(int num, int isToday, String paidDate) throws ParseException {
 		Service service = getParticularService(num);
 		if(service instanceof UnPaidService) {
-			//to do throw error
-			return;
+			throw new IllegalStateException();
 		}
 		PaidService ps = (PaidService) service;
 		if(isToday == 1) 
 			ps.setPaidDate(new Date());
-		else if(isToday == 2) {
-			try {
-				ps.setPaidDateInString(paidDate);
-			} catch (ParseException e) {
-				System.out.println("Date format should be DD/MM/YYYY");
-			}
-		}
+		else if(isToday == 2) 
+			ps.setPaidDateInString(paidDate);
 	}
 	
 	public void printAllService() {
